@@ -1,4 +1,5 @@
 📝 To-Do App
+
 A simple and interactive To-Do application built with **Flask (Python)** and **HTML/CSS**. This project helps users manage their daily tasks by allowing them to add, mark as complete, and delete tasks.
 
 
