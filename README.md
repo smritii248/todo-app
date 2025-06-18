@@ -19,8 +19,11 @@ Features
 
 
 todo-app/
+
 ├── app.py # Flask backend with APIs
+
 ├── index.html # Frontend UI
+
 ├── requirements.txt # Python dependencies
 
 
