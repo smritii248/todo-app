@@ -17,40 +17,25 @@ Features
 
 
 
+todo-app/
+├── app.py # Flask backend with APIs
+├── index.html # Frontend UI
+├── requirements.txt # Python dependencies
 
-Installation & Run
-Clone the repository
 
-bash
-Copy
-Edit
+Getting Started
+
+### 1. Clone the Repository
+
+```bash
 git clone https://github.com/smritii248/todo-app.git
 cd todo-app
-Create a virtual environment (optional but recommended)
+cd todo-app
 
-bash
-Copy
-Edit
-python -m venv venv
-source venv/bin/activate      # On Windows: venv\Scripts\activate
-Install dependencies
+Visit: http://127.0.0.1:5000
+Open index.html in your browser.
 
-bash
-Copy
-Edit
-pip install -r requirements.txt
-Run the app
 
-bash
-Copy
-Edit
-python app.py
-Open in browser
-
-cpp
-Copy
-Edit
-http://127.0.0.1:5000
 
 Author
 Smriti Joshi
