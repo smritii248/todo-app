@@ -1,0 +1,164 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>To-Do App</title>
+  <style>
+    body { font-family: Arial; max-width: 600px; margin: auto; padding: 20px; }
+    input, button { padding: 8px; margin: 5px 0; width: 100%; }
+    .task { border: 1px solid #ddd; padding: 10px; margin-top: 5px; border-radius: 5px; }
+    #spinner { text-align: center; margin: 10px 0; color: #444; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <h2>📝 To-Do App</h2>
+
+  <!-- Spinner -->
+  <div id="spinner" style="display:none;">
+    🔄 Loading...
+  </div>
+
+  <!-- Auth Section -->
+  <div id="auth">
+    <input id="username" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="register()">Register</button>
+    <button onclick="login()">Login</button>
+  </div>
+
+  <!-- To-Do Section -->
+  <div id="todo-section" style="display:none;">
+    <input id="new-task" placeholder="New Task">
+    <button onclick="addTask()">Add Task</button>
+    <h3>Your Tasks:</h3>
+    <div id="task-list"></div>
+  </div>
+
+  <script>
+    let token = "";
+
+    function showSpinner() {
+      document.getElementById('spinner').style.display = 'block';
+    }
+
+    function hideSpinner() {
+      document.getElementById('spinner').style.display = 'none';
+    }
+
+    function register() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      showSpinner();
+
+      fetch('http://127.0.0.1:5000/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      })
+      .then(res => res.json())
+      .then(data => alert(data.message || data.error))
+      .finally(hideSpinner);
+    }
+
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      showSpinner();
+
+      fetch('http://127.0.0.1:5000/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.token) {
+          token = data.token;
+          document.getElementById('auth').style.display = 'none';
+          document.getElementById('todo-section').style.display = 'block';
+          getTasks();
+        } else {
+          alert(data.error);
+        }
+      })
+      .finally(hideSpinner);
+    }
+
+    function addTask() {
+      const task = document.getElementById('new-task').value;
+      if (!task) return alert("Task cannot be empty!");
+      showSpinner();
+
+      fetch('http://127.0.0.1:5000/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({ task })
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.message || data.error);
+        getTasks();
+        document.getElementById('new-task').value = "";
+      })
+      .finally(hideSpinner);
+    }
+
+    function getTasks() {
+      showSpinner();
+      fetch('http://127.0.0.1:5000/tasks', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+      .then(res => res.json())
+      .then(tasks => {
+        const taskList = document.getElementById('task-list');
+        taskList.innerHTML = "";
+        tasks.forEach(task => {
+          const div = document.createElement('div');
+          div.className = 'task';
+          div.innerHTML = `
+            <strong>${task.task}</strong> - ${task.done ? '✅' : '❌'}<br>
+            <button onclick="markDone(${task.id})">Mark Done</button>
+            <button onclick="deleteTask(${task.id})">🗑️ Delete</button>`;
+          taskList.appendChild(div);
+        });
+      })
+      .finally(hideSpinner);
+    }
+
+    function markDone(id) {
+      showSpinner();
+      fetch(`http://127.0.0.1:5000/done/${id}`, {
+        method: 'PUT',
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.message || data.error);
+        getTasks();
+      })
+      .finally(hideSpinner);
+    }
+
+    function deleteTask(id) {
+      showSpinner();
+      fetch(`http://127.0.0.1:5000/delete/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.message || data.error);
+        getTasks();
+      })
+      .finally(hideSpinner);
+    }
+  </script>
+
+</body>
+</html>
